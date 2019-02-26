@@ -34,7 +34,7 @@ export class AppComponent {
       startX: 0,
       startY: 0
     };
-    $('.rectangle').remove();
+    $('.resizable').remove();
     $('.txt-input').remove();
   }
 
@@ -92,7 +92,7 @@ export class AppComponent {
     );
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(imgData, 0, 0);
-    $('.rectangle').remove();
+    $('.resizable').remove();
     canvas.onclick = null;
   }
 
@@ -106,15 +106,101 @@ export class AppComponent {
     }
 
     let element = null;
+    let resizers = null;
+    let resizer = null;
+
     const mouse = {
       x: 0,
       y: 0,
       startX: 0,
       startY: 0
     };
-    // if (modalBody.onclick !== null) {
-    //   modalBody.onclick = null;
-    // }
+
+    function makeResizableDiv(element) {
+      const resizers = document.querySelectorAll('.resizer');
+      const minimum_size = 20;
+      let original_width = 0;
+      let original_height = 0;
+      let original_x = 0;
+      let original_y = 0;
+      let original_mouse_x = 0;
+      let original_mouse_y = 0;
+
+      for (let i = 0; i < resizers.length; i++) {
+        const currentResizer = resizers[i];
+        currentResizer.addEventListener('mousedown', function(e: MouseEvent) {
+
+          e.preventDefault()
+          original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
+          original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
+          original_x = element.getBoundingClientRect().left;
+          original_y = element.getBoundingClientRect().top;
+          original_mouse_x = e.pageX;
+          original_mouse_y = e.pageY;
+
+          function resize (e: MouseEvent) {
+            if (currentResizer.classList.contains('bottom-right')) {
+              // mouse.x = e.pageX;
+              // mouse.y = e.pageY;
+              // element.style.width = mouse.x - element.getBoundingClientRect().left + 'px';
+              const width = original_width + (e.pageX - original_mouse_x);
+              const height = original_height + (e.pageY - original_mouse_y)
+              if (width > minimum_size) {
+                element.style.width = width + 'px';
+              }
+              if (height > minimum_size) {
+                element.style.height = height + 'px';
+              }
+            } else if (currentResizer.classList.contains('bottom-left')) {
+              const height = original_height + (e.pageY - original_mouse_y);
+              const width = original_width - (e.pageX - original_mouse_x);
+              if (height > minimum_size) {
+                element.style.height = height + 'px';
+              }
+              if (width > minimum_size) {
+                element.style.width = width + 'px';
+                element.style.left = mouse.startX + (e.pageX - original_mouse_x) + 'px';
+              }
+            } else if (currentResizer.classList.contains('top-right')) {
+              const width = original_width + (e.pageX - original_mouse_x);
+              const height = original_height - (e.pageY - original_mouse_y);
+              if (width > minimum_size) {
+                element.style.width = width + 'px';
+              }
+              if (height > minimum_size) {
+                element.style.height = height + 'px'
+                element.style.top = mouse.startY + (e.pageY - original_mouse_y) + 'px'
+              }
+            } else {
+              const width = original_width - (e.pageX - original_mouse_x);
+              const height = original_height - (e.pageY - original_mouse_y);
+              if (width > minimum_size) {
+                element.style.width = width + 'px';
+                element.style.left = mouse.startX + (e.pageX - original_mouse_x) + 'px';
+              }
+              if (height > minimum_size) {
+                element.style.height = height + 'px';
+                element.style.top = mouse.startY + (e.pageY - original_mouse_y) + 'px';
+              }
+            }
+          }
+
+          function stopResize() {
+            window.removeEventListener('mousemove', resize);
+            let newElement = $('.resizable')[0];
+            if (newElement) {
+              mouse.x = newElement.offsetWidth + newElement.offsetLeft;
+              mouse.y = newElement.offsetTop + newElement.offsetHeight;
+              mouse.startX = newElement.offsetLeft;
+              mouse.startY = newElement.offsetTop;
+            }
+          }
+
+          window.addEventListener('mousemove', resize);
+          window.addEventListener('mouseup', stopResize);
+        });
+      }
+    }
 
     canvas.onmousemove = function(e) {
       setMousePosition(e);
@@ -128,20 +214,87 @@ export class AppComponent {
       }
     };
 
+    function createReizers(el) {
+      resizers = document.createElement('div');
+      resizers.className = 'resizers';
+      resizers.style.width = '100%';
+      resizers.style.height = '100%';
+      resizers.style.position = 'absolute';
+      resizers.style['box-sizing'] = 'border-box';
+      element.appendChild(resizers);
+
+      resizer = document.createElement('div');
+      resizer.className = 'resizer top-left';
+      resizer.style.left = '-5px';
+      resizer.style.top = '-5px';
+      resizer.style.width = '10px';
+      resizer.style.height = '10px';
+      // resizer.style['border-radius'] = '50%';
+      resizer.style.position = 'absolute';
+      resizer.style.border = '1px solid #FF0000';
+      resizer.style.background = '#FF0000';
+      resizer.style.cursor = 'nwse-resize';
+      resizers.appendChild(resizer);
+
+      resizer = document.createElement('div');
+      resizer.className = 'resizer top-right';
+      resizer.style.right = '-5px';
+      resizer.style.top = '-5px';
+      resizer.style.width = '10px';
+      resizer.style.height = '10px';
+      // resizer.style['border-radius'] = '50%';
+      resizer.style.position = 'absolute';
+      resizer.style.border = '3px solid #FF0000';
+      resizer.style.background = '#FF0000';
+      resizer.style.cursor = 'nesw-resize';
+      resizers.appendChild(resizer);
+
+      resizer = document.createElement('div');
+      resizer.className = 'resizer bottom-right';
+      resizer.style.right = '-5px';
+      resizer.style.bottom = '-5px';
+      resizer.style.width = '10px';
+      resizer.style.height = '10px';
+      // resizer.style['border-radius'] = '50%';
+      resizer.style.position = 'absolute';
+      resizer.style.border = '3px solid #FF0000';
+      resizer.style.background = '#FF0000';
+      resizer.style.cursor = 'nwse-resize';
+      resizers.appendChild(resizer);
+
+      resizer = document.createElement('div');
+      resizer.className = 'resizer bottom-left';
+      resizer.style.left = '-5px';
+      resizer.style.bottom = '-5px';
+      resizer.style.width = '10px';
+      resizer.style.height = '10px';
+      // resizer.style['border-radius'] = '50%';
+      resizer.style.position = 'absolute';
+      resizer.style.border = '3px solid #FF0000';
+      resizer.style.background = '#FF0000';
+      resizer.style.cursor = 'nesw-resize';
+      resizers.appendChild(resizer);
+    }
+
     canvas.onclick = function(e) {
       if (element !== null) {
-        element = null;
+        resizers = null;
+        resizer = null;
         canvas.style.cursor = 'default';
         canvas.onmousemove = function() {};
         that.mouse = mouse;
         console.log('finsihed.', mouse);
+
+        createReizers(element)
+        makeResizableDiv(element)
+        element = null;
       } else {
         console.log('begun.');
         mouse.startX = mouse.x;
         mouse.startY = mouse.y;
         element = document.createElement('div');
-        element.className = 'rectangle';
-        element.style.border = '1px solid #FF0000';
+        element.className = 'resizable';
+        element.style.border = '2px dashed #FF0000';
         element.style.position = 'absolute';
         element.style.left = mouse.x + 'px';
         element.style.top = mouse.y + 'px';
