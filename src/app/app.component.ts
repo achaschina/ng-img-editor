@@ -97,6 +97,7 @@ export class AppComponent {
   }
 
   initDraw(canvas) {
+    $('.resizable').remove();
     const that = this;
     const modalBody = $('#modal-body')[0];
     function setMousePosition(e) {
