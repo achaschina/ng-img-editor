@@ -307,6 +307,7 @@ export class AppComponent {
   }
 
   getTxtInput(ev) {
+    $('.txt-input').remove();
     const modalBody = $('#modal-body')[0];
     let cellText = null;
     modalBody.onclick = function(ev) {
