@@ -131,7 +131,7 @@ export class AppComponent {
         const currentResizer = resizers[i];
         currentResizer.addEventListener('mousedown', function(e: MouseEvent) {
 
-          e.preventDefault()
+          e.preventDefault();
           original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
           original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
           original_x = element.getBoundingClientRect().left;
@@ -145,7 +145,7 @@ export class AppComponent {
               // mouse.y = e.pageY;
               // element.style.width = mouse.x - element.getBoundingClientRect().left + 'px';
               const width = original_width + (e.pageX - original_mouse_x);
-              const height = original_height + (e.pageY - original_mouse_y)
+              const height = original_height + (e.pageY - original_mouse_y);
               if (width > minimum_size) {
                 element.style.width = width + 'px';
               }
@@ -169,8 +169,8 @@ export class AppComponent {
                 element.style.width = width + 'px';
               }
               if (height > minimum_size) {
-                element.style.height = height + 'px'
-                element.style.top = mouse.startY + (e.pageY - original_mouse_y) + 'px'
+                element.style.height = height + 'px';
+                element.style.top = mouse.startY + (e.pageY - original_mouse_y) + 'px';
               }
             } else {
               const width = original_width - (e.pageX - original_mouse_x);
@@ -188,7 +188,7 @@ export class AppComponent {
 
           function stopResize() {
             window.removeEventListener('mousemove', resize);
-            let newElement = $('.resizable')[0];
+            const newElement = $('.resizable')[0];
             if (newElement) {
               mouse.x = newElement.offsetWidth + newElement.offsetLeft;
               mouse.y = newElement.offsetTop + newElement.offsetHeight;
@@ -286,8 +286,8 @@ export class AppComponent {
         that.mouse = mouse;
         console.log('finsihed.', mouse);
 
-        createReizers(element)
-        makeResizableDiv(element)
+        createReizers(element);
+        makeResizableDiv(element);
         element = null;
       } else {
         console.log('begun.');
@@ -310,7 +310,7 @@ export class AppComponent {
     const modalBody = $('#modal-body')[0];
     let cellText = null;
     modalBody.onclick = function(ev) {
-      console.log(cellText)
+      console.log(cellText);
       if (cellText == null) {
         cellText = $('<textarea/>');
         cellText[0].className = 'txt-input';
@@ -333,38 +333,29 @@ export class AppComponent {
       const element = inputsArr[i];
       if (element.value !== '') {
         ctx.lineWidth = 1;
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = 'black';
         ctx.lineStyle = '#ffff00';
         ctx.font = '18px sans-serif';
         const pos = $('.txt-input').position();
 
-        const printAt = function(context, text, x, y, lineHeight, fitWidth) {
-          fitWidth = fitWidth || 0;
-
-          if (fitWidth <= 0) {
-            context.fillText(text, x, y);
-            return;
-          }
-
-          for (let idx = 1; idx <= text.length; idx++) {
-            const str = text.substr(0, idx);
-            // console.log(str, context.measureText(str).width, fitWidth);
-            if (context.measureText(str).width > fitWidth) {
-              context.fillText(text.substr(0, idx - 1), x, y);
-              printAt(
-                context,
-                text.substr(idx - 1),
-                x,
-                y + lineHeight,
-                lineHeight,
-                fitWidth
-              );
-              return;
+        const wrapText = function(context, text, marginLeft, marginTop, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        const countWords = words.length;
+        let line = '';
+        for (let n = 0; n < countWords; n++) {
+            const testLine = line + words[n] + ' ';
+            const testWidth = context.measureText(testLine).width;
+            if (testWidth > maxWidth) {
+                context.fillText(line, marginLeft, marginTop);
+                line = words[n] + ' ';
+                marginTop += lineHeight;
+            } else {
+                line = testLine;
             }
-          }
-          context.fillText(text, x, y);
-        };
-        printAt(ctx, element.value, pos.left, pos.top + 18, 15, 200 );
+        }
+        context.fillText(line, marginLeft, marginTop);
+    };
+        wrapText(ctx, element.value, pos.left, pos.top + 18, 250, 15 );
       }
       element.remove();
     }
