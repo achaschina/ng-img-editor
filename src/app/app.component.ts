@@ -130,16 +130,23 @@ export class AppComponent {
       for (let i = 0; i < resizers.length; i++) {
         const currentResizer = resizers[i];
         currentResizer.addEventListener('mousedown', function(e: MouseEvent) {
-
           e.preventDefault();
-          original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
-          original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
+          original_width = parseFloat(
+            getComputedStyle(element, null)
+              .getPropertyValue('width')
+              .replace('px', '')
+          );
+          original_height = parseFloat(
+            getComputedStyle(element, null)
+              .getPropertyValue('height')
+              .replace('px', '')
+          );
           original_x = element.getBoundingClientRect().left;
           original_y = element.getBoundingClientRect().top;
           original_mouse_x = e.pageX;
           original_mouse_y = e.pageY;
 
-          function resize (e: MouseEvent) {
+          function resize(e: MouseEvent) {
             if (currentResizer.classList.contains('bottom-right')) {
               // mouse.x = e.pageX;
               // mouse.y = e.pageY;
@@ -160,7 +167,8 @@ export class AppComponent {
               }
               if (width > minimum_size) {
                 element.style.width = width + 'px';
-                element.style.left = mouse.startX + (e.pageX - original_mouse_x) + 'px';
+                element.style.left =
+                  mouse.startX + (e.pageX - original_mouse_x) + 'px';
               }
             } else if (currentResizer.classList.contains('top-right')) {
               const width = original_width + (e.pageX - original_mouse_x);
@@ -170,18 +178,21 @@ export class AppComponent {
               }
               if (height > minimum_size) {
                 element.style.height = height + 'px';
-                element.style.top = mouse.startY + (e.pageY - original_mouse_y) + 'px';
+                element.style.top =
+                  mouse.startY + (e.pageY - original_mouse_y) + 'px';
               }
             } else {
               const width = original_width - (e.pageX - original_mouse_x);
               const height = original_height - (e.pageY - original_mouse_y);
               if (width > minimum_size) {
                 element.style.width = width + 'px';
-                element.style.left = mouse.startX + (e.pageX - original_mouse_x) + 'px';
+                element.style.left =
+                  mouse.startX + (e.pageX - original_mouse_x) + 'px';
               }
               if (height > minimum_size) {
                 element.style.height = height + 'px';
-                element.style.top = mouse.startY + (e.pageY - original_mouse_y) + 'px';
+                element.style.top =
+                  mouse.startY + (e.pageY - original_mouse_y) + 'px';
               }
             }
           }
@@ -311,7 +322,7 @@ export class AppComponent {
     const modalBody = $('#modal-body')[0];
     let cellText = null;
     modalBody.onclick = function(ev) {
-      console.log(cellText);
+      // console.log(cellText);
       if (cellText == null) {
         cellText = $('<textarea/>');
         cellText[0].className = 'txt-input';
@@ -339,24 +350,36 @@ export class AppComponent {
         ctx.font = '18px sans-serif';
         const pos = $('.txt-input').position();
 
-        const wrapText = function(context, text, marginLeft, marginTop, maxWidth, lineHeight) {
-        const words = text.split(' ');
-        const countWords = words.length;
-        let line = '';
-        for (let n = 0; n < countWords; n++) {
-            const testLine = line + words[n] + ' ';
-            const testWidth = context.measureText(testLine).width;
-            if (testWidth > maxWidth) {
+        const wrapText = function(
+          context,
+          text,
+          marginLeft,
+          marginTop,
+          maxWidth,
+          lineHeight
+        ) {
+          const entersArr = text.split(/\r?\n/);
+          entersArr.forEach(string => {
+            const words = string.split(' ');
+            const countWords = words.length;
+            let line = '';
+            for (let n = 0; n < countWords; n++) {
+              const testLine = line + words[n] + ' ';
+              const testWidth = context.measureText(testLine).width;
+              if (testWidth > maxWidth) {
                 context.fillText(line, marginLeft, marginTop);
                 line = words[n] + ' ';
                 marginTop += lineHeight;
-            } else {
+              } else {
                 line = testLine;
+              }
             }
-        }
-        context.fillText(line, marginLeft, marginTop);
-    };
-        wrapText(ctx, element.value, pos.left, pos.top + 18, 250, 15 );
+            context.fillText(line, marginLeft, marginTop);
+            marginTop += lineHeight;
+          });
+
+        };
+        wrapText(ctx, element.value, pos.left, pos.top + 18, 250, 15);
       }
       element.remove();
     }
