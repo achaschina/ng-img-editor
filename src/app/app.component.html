@@ -2,7 +2,7 @@
   <div class="row">
     <div *ngFor="let item of imgs">
       <div class="card" style="width: 18rem; margin: 1rem;">
-        <img src={{item.url}} class="card-img-top" (click)="showModal($event)">
+        <img src={{item.url}} class="card-img-top" (click)="showModal($event)" >
         <div class="card-body">
           <h5 class="card-title">Card title</h5>
           <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -24,11 +24,52 @@
         <canvas id="imgCanvas" #imgCanvas (dblclick)="getTxtInput($event)"></canvas>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="initDraw(imgCanvas)">Выделить область</button>
+        <!-- <button type="button" class="btn btn-primary" (click)="initDraw(imgCanvas)">Выделить область</button>
         <button type="button" class="btn btn-secondary" (click)="cutImg()">Обрезать</button>
         <button type="button" class="btn btn-primary" (click)="getTxtInput()">Надпись</button>
-        <button type="button" class="btn btn-primary" (click)="saveTxt()">Сохранить текст</button>
+        <button type="button" class="btn btn-primary" (click)="saveTxt()">Сохранить текст</button> -->
+
+        <div class="container wrap">
+          <div class="row">
+            <div class="custom-width col-4">
+              <mat-hint>Обрезать рисунок</mat-hint>
+              <div class="example-full-width" >
+                <button mat-icon-button matTooltipClass="tooltip-zindex" matTooltip="Выделить область для обрезки" (click)="initDraw(imgCanvas)">
+                  <mat-icon aria-label="">aspect_ratio</mat-icon>
+                </button>
+                <button mat-icon-button matTooltipClass="tooltip-zindex" matTooltip="Сохранить фрагмент" (click)="cutImg()">
+                  <mat-icon aria-label="">save_alt</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div class="custom-width col-4">
+              <mat-hint>Выделить область</mat-hint>
+              <div class="example-full-width">
+                <button mat-icon-button (click)="selectArea(imgCanvas)">
+                  <mat-icon aria-label="" matTooltipClass="tooltip-zindex" matTooltip="Выделить область">crop_square</mat-icon>
+                </button>
+                <button mat-icon-button (click)="saveSqr()">
+                    <mat-icon aria-label="" matTooltipClass="tooltip-zindex" matTooltip="Сохранить">save_alt</mat-icon>
+                  </button>
+              </div>
+            </div>
+            <div class="custom-width col-4">
+              <mat-hint>Текст</mat-hint>
+              <div class="example-full-width">
+                <button mat-icon-button (click)="getTxtInput()">
+                  <mat-icon aria-label="" matTooltipClass="tooltip-zindex" matTooltip="Создать надпись">text_fields</mat-icon>
+                </button>
+                <button mat-icon-button (click)="saveTxt()">
+                  <mat-icon aria-label="" matTooltipClass="tooltip-zindex" matTooltip="Сохранить надпись">save_alt</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   </div>
 </div>
+
