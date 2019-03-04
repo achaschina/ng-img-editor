@@ -8,16 +8,11 @@ declare var $: any;
 })
 export class AppComponent {
   imgs = [
-    { url: 'https://images.pexels.com/photos/723240/pexels-photo-723240.jpeg' },
-    {
-      url:
-        'https://images.pexels.com/photos/46160/field-clouds-sky-earth-46160.jpeg'
-    },
-    { url: 'https://images.pexels.com/photos/215/road-sky-clouds-cloudy.jpg' },
-    {
-      url: 'https://images.pexels.com/photos/1166209/pexels-photo-1166209.jpeg'
-    },
-    { url: 'https://a.radikal.ru/a15/1902/af/60e2b65e3674.png' }
+    { url: '../assets/pexels-photo-723240.jpeg' },
+    { url: '../assets/field-clouds-sky-earth-46160.jpeg' },
+    { url: '../assets/road-sky-clouds-cloudy.jpg' },
+    { url: '../assets/pexels-photo-1166209.jpeg' },
+    { url: '../assets//60e2b65e3674.png' },
   ];
   currentImgSrc = { url: '' };
   mouse = {
@@ -318,6 +313,7 @@ export class AppComponent {
   }
 
   getTxtInput(ev) {
+    $('.resizable').remove();
     $('.txt-input').remove();
     const modalBody = $('#modal-body')[0];
     let cellText = null;
